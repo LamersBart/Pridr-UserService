@@ -23,7 +23,7 @@ public class ProfileRepo : IProfileRepo
 
     public Profile GetProfileById(int id)
     {
-        return _context.Profiles.FirstOrDefault(p => p.Id == id);
+        return _context.Profiles.FirstOrDefault(p => p.Id == id)!;
     }
 
     public void CreateProfile(Profile profile)

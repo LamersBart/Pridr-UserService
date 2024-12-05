@@ -2,5 +2,5 @@ namespace UserService.Enums;
 
 public class UserRegisterDto
 {
-    public string userId { get; set; }
+    public required string userId { get; set; }
 }
