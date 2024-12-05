@@ -25,5 +25,6 @@ public class Profile
     public double? Height { get; set; }
     public RelationStatus? RelationStatus { get; set; }
     public int? PartnerUserId { get; set; }
+    [MaxLength(30)]
     public string? UserName { get; set; }
 }
