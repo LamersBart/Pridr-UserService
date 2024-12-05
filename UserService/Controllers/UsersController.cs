@@ -19,8 +19,7 @@ public class UsersController : ControllerBase
         _repo = repo;
         _mapper = mapper;
     }
-
-    [Authorize]
+    
     [HttpGet(Name="GetUsers")]
     public ActionResult<IEnumerable<UserReadDto>> GetUsers()
     {
@@ -28,5 +27,4 @@ public class UsersController : ControllerBase
         var users = _repo.GetAllUsers();
         return Ok(_mapper.Map<IEnumerable<UserReadDto>>(users));
     }
-    
 }

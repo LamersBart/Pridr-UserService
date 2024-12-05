@@ -39,4 +39,13 @@ public class ProfileRepo : IProfileRepo
     {
         return _context.Profiles.Any(p => p.Id == profileId);
     }
+
+    public void UpdateProfile(Profile profile)
+    {
+        if (profile is null)
+        {
+            throw new ArgumentNullException(nameof(profile));
+        }
+        _context.Profiles.Update(profile);
+    }
 }
