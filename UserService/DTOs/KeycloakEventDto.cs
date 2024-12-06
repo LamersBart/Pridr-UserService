@@ -19,16 +19,16 @@ public class KeycloakEventDto
 
 public class Details
 {
-    // [JsonPropertyName("auth_method")]
-    // public string AuthMethod { get; set; }
-    // [JsonPropertyName("auth_type")]
-    // public string AuthType { get; set; }
-    // [JsonPropertyName("register_method")]
-    // public string RegisterMethod { get; set; }
-    // [JsonPropertyName("redirect_uri")]
-    // public string RedirectUri { get; set; }
-    // [JsonPropertyName("code_id")]
-    // public string CodeId { get; set; }
+    [JsonPropertyName("auth_method")]
+    public string? AuthMethod { get; set; }
+    [JsonPropertyName("auth_type")]
+    public string? AuthType { get; set; }
+    [JsonPropertyName("register_method")]
+    public string? RegisterMethod { get; set; }
+    [JsonPropertyName("redirect_uri")]
+    public string? RedirectUri { get; set; }
+    [JsonPropertyName("code_id")]
+    public string? CodeId { get; set; }
     [JsonPropertyName("email")]
-    public required string Email { get; set; }
+    public string? Email { get; set; }
 }
