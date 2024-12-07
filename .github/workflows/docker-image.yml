@@ -24,17 +24,17 @@ jobs:
         mkdir -p ./UserService
         printf '{
           "ConnectionStrings": {
-            "PostgresConnection": "${{ secrets.APPSETTINGS_PRODUCTION_CONNECTIONSTRING }}"
+            "PostgresConnection": "'"${{ secrets.APPSETTINGS_PRODUCTION_CONNECTIONSTRING }}"'"
           },
-          "RabbitMQHost": "${{ secrets.APPSETTINGS_PRODUCTION_RABBITMQHOST }}",
-          "RabbitMQPort": "${{ secrets.APPSETTINGS_PRODUCTION_RABBITMQPORT }}",
+          "RabbitMQHost": "'"${{ secrets.APPSETTINGS_PRODUCTION_RABBITMQHOST }}"'",
+          "RabbitMQPort": "'"${{ secrets.APPSETTINGS_PRODUCTION_RABBITMQPORT }}"'",
           "Keycloak": {
-            "AuthorizationUrl": "${{ secrets.APPSETTINGS_PRODUCTION_KEYCLAOK_AUTHURL }}"
+            "AuthorizationUrl": "'"${{ secrets.APPSETTINGS_PRODUCTION_KEYCLAOK_AUTHURL }}"'"
           },
           "Authentication": {
-            "MetadataAddress": "${{ secrets.APPSETTINGS_PRODUCTION_AUTH_METADATA }}",
-            "ValidIssuer": "${{ secrets.APPSETTINGS_PRODUCTION_AUTH_VALIDISSUER }}",
-            "Audience": "${{ secrets.APPSETTINGS_PRODUCTION_AUTH_AUDIENCE }}"
+            "MetadataAddress": "'"${{ secrets.APPSETTINGS_PRODUCTION_AUTH_METADATA }}"'",
+            "ValidIssuer": "'"${{ secrets.APPSETTINGS_PRODUCTION_AUTH_VALIDISSUER }}"'",
+            "Audience": "'"${{ secrets.APPSETTINGS_PRODUCTION_AUTH_AUDIENCE }}"'"
           }
         }' > ./UserService/appsettings.Production.json
 
