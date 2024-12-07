@@ -18,6 +18,9 @@ jobs:
       
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Create appsettings.Production.json
+      run: echo "${{ secrets.APPSETTINGS_PRODUCTION_JSON }}" > ./UserService/appsettings.production.json
     
     - name: Build the Docker image
       run: docker build ./UserService --file ./UserService/Dockerfile -t lamersbart/pridr-userservice:$TAG
