@@ -20,10 +20,26 @@ jobs:
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
     - name: Create appsettings.Production.json
-      run: echo "${{ secrets.APPSETTINGS_PRODUCTION_JSON }}" > ./UserService/appsettings.Production.json
-      
+      run: |
+        mkdir -p ./UserService
+        printf '{
+          "ConnectionStrings": {
+            "PostgresConnection": "${{ secrets.APPSETTINGS_PRODUCTION_CONNECTIONSTRING }}"
+          },
+          "RabbitMQHost": "${{ secrets.APPSETTINGS_PRODUCTION_RABBITMQHOST }}",
+          "RabbitMQPort": "${{ secrets.APPSETTINGS_PRODUCTION_RABBITMQPORT }}",
+          "Keycloak": {
+            "AuthorizationUrl": "${{ secrets.APPSETTINGS_PRODUCTION_KEYCLAOK_AUTHURL }}"
+          },
+          "Authentication": {
+            "MetadataAddress": "${{ secrets.APPSETTINGS_PRODUCTION_AUTH_METADATA }}",
+            "ValidIssuer": "${{ secrets.APPSETTINGS_PRODUCTION_AUTH_VALIDISSUER }}",
+            "Audience": "${{ secrets.APPSETTINGS_PRODUCTION_AUTH_AUDIENCE }}"
+          }
+        }' > ./UserService/appsettings.Production.json
+
     - name: Verify appsettings.production.json
-      run: cat ./UserService/appsettings.production.json
+      run: cat ./UserService/appsettings.Production.json
     
     - name: Build the Docker image
       run: docker build ./UserService --file ./UserService/Dockerfile -t lamersbart/pridr-userservice:$TAG
