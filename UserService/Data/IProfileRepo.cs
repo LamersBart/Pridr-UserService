@@ -9,4 +9,5 @@ public interface IProfileRepo
     Profile GetProfileById(int id);
     void CreateProfile(Profile profile);
     bool ProfileExist(int profileId);
+    void UpdateProfile(Profile profile);
 }

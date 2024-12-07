@@ -23,7 +23,7 @@ public class ProfileRepo : IProfileRepo
 
     public Profile GetProfileById(int id)
     {
-        return _context.Profiles.FirstOrDefault(p => p.Id == id);
+        return _context.Profiles.FirstOrDefault(p => p.Id == id)!;
     }
 
     public void CreateProfile(Profile profile)
@@ -38,5 +38,14 @@ public class ProfileRepo : IProfileRepo
     public bool ProfileExist(int profileId)
     {
         return _context.Profiles.Any(p => p.Id == profileId);
+    }
+
+    public void UpdateProfile(Profile profile)
+    {
+        if (profile is null)
+        {
+            throw new ArgumentNullException(nameof(profile));
+        }
+        _context.Profiles.Update(profile);
     }
 }

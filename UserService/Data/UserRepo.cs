@@ -26,7 +26,7 @@ public class UserRepo : IUserRepo
 
     public User GetUserById(string id)
     {
-        return _context.User.FirstOrDefault(p => p.KeyCloakId == id);
+        return _context.User.FirstOrDefault(p => p.KeyCloakId == id)!;
     }
 
     public int CreateUser(User user)

@@ -38,21 +38,24 @@ public class EventProcessor : IEventProcessor
     {
         Console.WriteLine("--> Determining Event");
         var keycloakEvent = JsonSerializer.Deserialize<KeycloakEventDto>(notificationMessage);
-        switch (keycloakEvent.Type)
-        {
-            case "LOGIN":
-                Console.WriteLine("--> Login Event Detected");
-                return EventType.Login;
-            case "LOGOUT":
-                Console.WriteLine("--> Logout Event Detected");
-                return EventType.Logout;
-            case "REGISTER":
-                Console.WriteLine("--> Register Event Detected");
-                return EventType.Register;
-            default:
-                Console.WriteLine("--> Other Event Detected");
-                return EventType.Undetermined;
-        }
+        if (keycloakEvent != null)
+            switch (keycloakEvent.Type)
+            {
+                case "LOGIN":
+                    Console.WriteLine("--> Login Event Detected");
+                    return EventType.Login;
+                case "LOGOUT":
+                    Console.WriteLine("--> Logout Event Detected");
+                    return EventType.Logout;
+                case "REGISTER":
+                    Console.WriteLine("--> Register Event Detected");
+                    return EventType.Register;
+                default:
+                    Console.WriteLine("--> Other Event Detected");
+                    return EventType.Undetermined;
+            }
+        Console.WriteLine("--> Other Event Detected");
+        return EventType.Undetermined;
     }
 
     private void AddUser(string keyCloakPublishedMessage)

@@ -9,8 +9,7 @@ public class User
     public int Id { get; set; }
     [Required]
     public required string KeyCloakId { get; set; }
-    [Required]
-    public required string UserName { get; set; }
+
     [Required]
     public required string Email { get; set; }
     [Required]

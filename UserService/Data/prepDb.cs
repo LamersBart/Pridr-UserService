@@ -37,7 +37,6 @@ public class prepDb
                 new User
                 {
                     KeyCloakId = "",
-                    UserName = "admin",
                     Email = "admin@admin.com",
                     Profile = new Profile
                     {
@@ -52,7 +51,6 @@ public class prepDb
                 new User
                 {
                     KeyCloakId = "",
-                    UserName = "user1",
                     Email = "user@test.com",
                     Profile = new Profile
                     {
