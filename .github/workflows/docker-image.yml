@@ -8,11 +8,11 @@ jobs:
   build:
 
     runs-on: ubuntu-22.04
-
-    env:
-      TAG: $(date +%s)
     
     steps:
+    - name: Set dynamic TAG variable
+      id: set_tag
+      run: echo "TAG=$(date +%s)" >> $GITHUB_ENV
     - uses: actions/checkout@v4
     - name: Build the Docker image
       run: docker build ./UserService --file ./UserService/Dockerfile -t lamersbart/pridr-userservice:$TAG
