@@ -24,7 +24,7 @@ jobs:
         mkdir -p ./UserService
         printf '{
           "ConnectionStrings": {
-            "PostgresConnection": "'"${{ secrets.APPSETTINGS_PRODUCTION_CONNECTIONSTRING }}"'"
+            "PostgresConnection": "Host=${{ secrets.APPSETTINGS_PRODUCTION_CONNECTIONSTRING_HOST }};Port=${{ secrets.APPSETTINGS_PRODUCTION_CONNECTIONSTRING_PORT }};Username=${{ secrets.APPSETTINGS_PRODUCTION_CONNECTIONSTRING_USERNAME }};Password=${{ secrets.APPSETTINGS_PRODUCTION_CONNECTIONSTRING_PASSWORD }};Database=${{ secrets.APPSETTINGS_PRODUCTION_CONNECTIONSTRING_DB }}"
           },
           "RabbitMQHost": "'"${{ secrets.APPSETTINGS_PRODUCTION_RABBITMQHOST }}"'",
           "RabbitMQPort": "'"${{ secrets.APPSETTINGS_PRODUCTION_RABBITMQPORT }}"'",
