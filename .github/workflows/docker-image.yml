@@ -21,6 +21,9 @@ jobs:
 
     - name: Create appsettings.Production.json
       run: echo "${{ secrets.APPSETTINGS_PRODUCTION_JSON }}" > ./UserService/appsettings.Production.json
+      
+    - name: Verify appsettings.production.json
+      run: cat ./UserService/appsettings.production.json
     
     - name: Build the Docker image
       run: docker build ./UserService --file ./UserService/Dockerfile -t lamersbart/pridr-userservice:$TAG
