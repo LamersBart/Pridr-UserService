@@ -2,16 +2,26 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace UserService.Data;
 
-public class EncryptedValueConverter<T> : ValueConverter<T, string>
+public class EncryptedValueConverter<T> : ValueConverter<T?, string?> where T : struct
 {
     public EncryptedValueConverter()
         : base(
-            v => !EqualityComparer<T>.Default.Equals(v, default) 
-                ? EncryptionHelper.Encrypt(v.ToString()) 
-                : null, // Encrypt during save
+            v => v.HasValue ? EncryptionHelper.Encrypt(v.Value.ToString()!) : null, // Encrypt if not null
             v => !string.IsNullOrEmpty(v) 
-                ? (T)Convert.ChangeType(EncryptionHelper.Decrypt(v), Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T)) 
-                : default // Decrypt during retrieval
+                ? (T?)Convert.ChangeType(EncryptionHelper.Decrypt(v), Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T))
+                : default(T?) // Explicitly handle nullable default
+        )
+    { }
+}
+
+public class EncryptedReferenceConverter<T> : ValueConverter<T?, string?> where T : class
+{
+    public EncryptedReferenceConverter()
+        : base(
+            v => v != null ? EncryptionHelper.Encrypt(v.ToString()!) : null, // Encrypt if not null
+            v => !string.IsNullOrEmpty(v)
+                ? (T?)Convert.ChangeType(EncryptionHelper.Decrypt(v), typeof(T)) 
+                : null // Decrypt
         )
     { }
 }

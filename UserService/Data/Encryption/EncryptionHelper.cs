@@ -5,7 +5,7 @@ namespace UserService.Data;
 
 public static class EncryptionHelper
 {
-    private static string _encryptionKey;
+    private static string? _encryptionKey;
 
     public static void Initialize(IConfiguration configuration)
     {
@@ -20,7 +20,7 @@ public static class EncryptionHelper
     {
         using (SHA256 sha256 = SHA256.Create())
         {
-            return sha256.ComputeHash(Encoding.UTF8.GetBytes(_encryptionKey));
+            return sha256.ComputeHash(Encoding.UTF8.GetBytes(_encryptionKey!));
         }
     }
 

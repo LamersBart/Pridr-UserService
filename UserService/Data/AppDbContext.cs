@@ -18,7 +18,7 @@ public class AppDbContext : DbContext
             entity.Property(e => e.UserName)
                 .HasColumnType("text");
             entity.Property(e => e.UserName)
-                .HasConversion(new EncryptedValueConverter<string>());
+                .HasConversion(new EncryptedReferenceConverter<string>());
             
             entity.Property(e => e.Latitude)
                 .HasColumnType("text");
@@ -33,22 +33,22 @@ public class AppDbContext : DbContext
             entity.Property(e => e.Weight)
                 .HasColumnType("text");
             entity.Property(e => e.Weight)
-                .HasConversion(new EncryptedValueConverter<double?>());
+                .HasConversion(new EncryptedValueConverter<double>());
 
             entity.Property(e => e.Height)
                 .HasColumnType("text");
             entity.Property(e => e.Height)
-                .HasConversion(new EncryptedValueConverter<double?>());
+                .HasConversion(new EncryptedValueConverter<double>());
 
             entity.Property(e => e.Age)
                 .HasColumnType("text");
             entity.Property(e => e.Age)
-                .HasConversion(new EncryptedValueConverter<int?>());
+                .HasConversion(new EncryptedValueConverter<int>());
             
             entity.Property(e => e.PartnerUserId)
                 .HasColumnType("text");
             entity.Property(e => e.PartnerUserId)
-                .HasConversion(new EncryptedValueConverter<int?>());
+                .HasConversion(new EncryptedValueConverter<int>());
         });
     }
 }
