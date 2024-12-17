@@ -31,8 +31,7 @@ public class MessageBusSubscriber : BackgroundService
         };
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();
-        // _channel.ExchangeDeclare(exchange: "topic", type: ExchangeType.Topic);
-        _queueName = _channel.QueueDeclare().QueueName;
+        _queueName = _channel.QueueDeclare("KeycloakEvents");
         var routingKeys = new[]
         {
             "KK.EVENT.CLIENT.pridr.SUCCESS.#.REGISTER",
@@ -64,7 +63,7 @@ public class MessageBusSubscriber : BackgroundService
         return Task.CompletedTask;
     }
 
-    private void RabbitMQ_ConectionShutdown(object sender, ShutdownEventArgs e)
+    private static void RabbitMQ_ConectionShutdown(object sender, ShutdownEventArgs e)
     {
         Console.WriteLine("--> Connection Shutdown.");
     }
