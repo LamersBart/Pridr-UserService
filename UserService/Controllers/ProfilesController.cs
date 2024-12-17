@@ -9,7 +9,7 @@ namespace UserService.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/profiles")]
 public class ProfilesController : ControllerBase
 {
     private readonly IProfileRepo _repo;
@@ -23,7 +23,7 @@ public class ProfilesController : ControllerBase
     
 
 
-    [HttpGet("getAll/")]
+    [HttpGet()]
     public ActionResult<IEnumerable<ProfileReadDto>> GetProfiles()
     {
         Console.WriteLine("--> Getting all profiles...");
@@ -31,7 +31,7 @@ public class ProfilesController : ControllerBase
         return Ok(_mapper.Map<IEnumerable<ProfileReadDto>>(platformItems));
     }
     
-    [HttpGet("get/{profileId}")]
+    [HttpGet("{profileId}")]
     public ActionResult<ProfileReadDto> GetProfileById(int profileId) 
     {
         if (!_repo.ProfileExist(profileId))
@@ -43,7 +43,7 @@ public class ProfilesController : ControllerBase
         return Ok(_mapper.Map<ProfileReadDto>(profile));
     }
     
-    [HttpPatch("update/{profileId}")]
+    [HttpPatch("{profileId}")]
     public ActionResult<ProfileReadDto> UpdateProfile(int profileId, ProfileUpdateDto profileUpdateDto)
     {
         if (!_repo.ProfileExist(profileId))
@@ -58,7 +58,7 @@ public class ProfilesController : ControllerBase
         return Ok(_mapper.Map<ProfileReadDto>(updatedProfile));
     }
     
-    [HttpPatch("updateLocation/{profileId}")]
+    [HttpPatch("location/{profileId}")]
     public ActionResult<ProfileReadDto> UpdateLocationOfProfile(int profileId, ProfileUpdateLocationDto profileUpdateLocationDto)
     {
         if (!_repo.ProfileExist(profileId))

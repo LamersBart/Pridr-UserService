@@ -1,11 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Extensions;
 using UserService.Enums;
 using UserService.Models;
 
 namespace UserService.Data;
 
-public class prepDb
+public static class PrepDb
 {
     public static void PrepPopulation(IApplicationBuilder app, bool isProduction)
     {
@@ -40,12 +39,16 @@ public class prepDb
                     Email = "admin@admin.com",
                     Profile = new Profile
                     {
-                        Sexuality = Sexuality.Gay,
+                        Sexuality = Sexuality.Unknown,
                         LookingFor = LookingFor.Friendship,
                         Latitude = 120.20291,
                         Longitude = 12349.20202,
-                        UserId = 0,
-                        UserName = "user2"
+                        UserName = "user2",
+                        RelationStatus = RelationStatus.Unknown,
+                        Age = 20,
+                        Height = 170.0,
+                        Weight = 60.0,
+                        PartnerUserId = 0,
                     }
                 },
                 new User
@@ -54,13 +57,16 @@ public class prepDb
                     Email = "user@test.com",
                     Profile = new Profile
                     {
-                        Sexuality = Sexuality.Lesbian,
+                        Sexuality = Sexuality.Unknown,
                         LookingFor = LookingFor.Fun,
                         Latitude = 120.20291,
                         Longitude = 12349.20202,
-                        Id = 0,
-                        UserId = 0,
-                        UserName = "user1"
+                        UserName = "user1",
+                        RelationStatus = RelationStatus.Unknown,
+                        Age = 26,
+                        Height = 190.0,
+                        Weight = 72.0,
+                        PartnerUserId = 0
                     }
                 });
             context.SaveChanges();

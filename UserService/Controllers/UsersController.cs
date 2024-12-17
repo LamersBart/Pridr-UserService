@@ -8,7 +8,7 @@ namespace UserService.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/user")]
 public class UsersController : ControllerBase
 {
     private readonly IUserRepo _repo;
@@ -20,7 +20,7 @@ public class UsersController : ControllerBase
         _mapper = mapper;
     }
     
-    [HttpGet(Name="GetUsers")]
+    [HttpGet()]
     public ActionResult<IEnumerable<UserReadDto>> GetUsers()
     {
         Console.WriteLine("--> Getting all profiles...");

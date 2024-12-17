@@ -34,7 +34,7 @@ public class EventProcessor : IEventProcessor
         }
     }
 
-    private EventType DetermineEvent(string notificationMessage)
+    private static EventType DetermineEvent(string notificationMessage)
     {
         Console.WriteLine("--> Determining Event");
         var keycloakEvent = JsonSerializer.Deserialize<KeycloakEventDto>(notificationMessage);
@@ -77,12 +77,13 @@ public class EventProcessor : IEventProcessor
                         UserId = newUser.Id,
                         Sexuality = Sexuality.Unknown,
                         LookingFor = LookingFor.Friendship,
-                        Latitude = 0,
-                        Longitude = 0,
+                        Age = 0,
+                        Latitude = 0.0,
+                        Longitude = 0.0,
                         Weight = 0.0,
                         Height = 0.0,
-                        RelationStatus = null,
-                        PartnerUserId = null,
+                        RelationStatus = RelationStatus.Unknown,
+                        PartnerUserId = 0,
                         UserName = ""
                     };
                     profileRepo.CreateProfile(newProfile);
@@ -91,7 +92,7 @@ public class EventProcessor : IEventProcessor
                 }
                 else
                 {
-                    Console.WriteLine($"--> Platform {newUser.KeyCloakId} already exists");
+                    Console.WriteLine($"--> User {newUser.KeyCloakId} already exists");
                 }
             }
             catch (Exception ex)

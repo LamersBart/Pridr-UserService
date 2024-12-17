@@ -107,17 +107,13 @@ builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddSingleton<IEventProcessor, EventProcessor>();
 builder.Services.AddHostedService<MessageBusSubscriber>();
 builder.Services.AddControllers();
+EncryptionHelper.Initialize(builder.Configuration);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-// if (app.Environment.IsDevelopment())
-// {
 app.UseSwagger();
 app.UseSwaggerUI(o => o.EnableTryItOutByDefault());
-// }
-prepDb.PrepPopulation(app, environment.IsProduction());
-// app.UseHttpsRedirection();
+PrepDb.PrepPopulation(app, environment.IsProduction());
 app.UseCors(corsConfig);
 app.UseAuthentication();
 app.UseAuthorization();
