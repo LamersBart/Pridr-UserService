@@ -24,16 +24,6 @@ builder.Services
 builder.Services.AddAuthorization();
 
 var environment = builder.Environment;
-var  corsConfig = "_corsConfig";
-builder.Services.AddCors(o =>
-{
-    o.AddPolicy("_corsConfig", policy =>
-    {
-        policy.WithOrigins("http://localhost:5267", "https://localhost:7009", "http://lamersdevlocal.com:5267","https://lamersdevlocal.com:7009")
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
-});
 var contact = new OpenApiContact
 {
     Name = "Bart Lamers",
@@ -114,7 +104,6 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI(o => o.EnableTryItOutByDefault());
 PrepDb.PrepPopulation(app, environment.IsProduction());
-app.UseCors(corsConfig);
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
