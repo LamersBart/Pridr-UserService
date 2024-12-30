@@ -31,42 +31,51 @@ public class ProfilesController : ControllerBase
         return Ok(_mapper.Map<IEnumerable<ProfileReadDto>>(platformItems));
     }
     
-    [HttpGet("{profileId}")]
-    public ActionResult<ProfileReadDto> GetProfileById(int profileId) 
+    [HttpGet("{keyCloakId}")]
+    public ActionResult<ProfileReadDto> GetProfileById(string keyCloakId) 
     {
-        if (!_repo.ProfileExist(profileId))
+        if (!_repo.ProfileExist(keyCloakId))
         {
             return NotFound();
         }
-        Console.WriteLine($"--> Getting Profile By Id: {profileId}...");
-        Profile profile = _repo.GetProfileById(profileId);
+        Console.WriteLine($"--> Getting Profile By Id: {keyCloakId}...");
+        Profile profile = _repo.GetProfileById(keyCloakId);
         return Ok(_mapper.Map<ProfileReadDto>(profile));
     }
     
-    [HttpPatch("{profileId}")]
-    public ActionResult<ProfileReadDto> UpdateProfile(int profileId, ProfileUpdateDto profileUpdateDto)
+    [HttpPost("batch")]
+    public async Task<IActionResult> GetUserNamesByIds(List<string> ids)
     {
-        if (!_repo.ProfileExist(profileId))
+        Console.WriteLine("--> Getting batch profiles...");
+        var profiles = _repo.GetUserNames(ids);
+        return Ok(_mapper.Map<IEnumerable<ProfileUserNameDto>>(profiles));
+    }
+
+    
+    [HttpPatch("{keyCloakId}")]
+    public ActionResult<ProfileReadDto> UpdateProfile(string keyCloakId, ProfileUpdateDto profileUpdateDto)
+    {
+        if (!_repo.ProfileExist(keyCloakId))
         {
             return NotFound();
         }
-        Console.WriteLine($"--> Updating Profile By Id: {profileId}...");
-        Profile profile = _repo.GetProfileById(profileId);
+        Console.WriteLine($"--> Updating Profile By Id: {keyCloakId}...");
+        Profile profile = _repo.GetProfileById(keyCloakId);
         Profile updatedProfile = _mapper.Map(profileUpdateDto, profile);
         _repo.UpdateProfile(updatedProfile);
         _repo.SaveChanges();
         return Ok(_mapper.Map<ProfileReadDto>(updatedProfile));
     }
     
-    [HttpPatch("location/{profileId}")]
-    public ActionResult<ProfileReadDto> UpdateLocationOfProfile(int profileId, ProfileUpdateLocationDto profileUpdateLocationDto)
+    [HttpPatch("location/{keyCloakId}")]
+    public ActionResult<ProfileReadDto> UpdateLocationOfProfile(string keyCloakId, ProfileUpdateLocationDto profileUpdateLocationDto)
     {
-        if (!_repo.ProfileExist(profileId))
+        if (!_repo.ProfileExist(keyCloakId))
         {
             return NotFound();
         }
-        Console.WriteLine($"--> Updating Location Of Profile By Id: {profileId}...");
-        Profile profile = _repo.GetProfileById(profileId);
+        Console.WriteLine($"--> Updating Location Of Profile By Id: {keyCloakId}...");
+        Profile profile = _repo.GetProfileById(keyCloakId);
         Profile updatedProfile = _mapper.Map(profileUpdateLocationDto, profile);
         _repo.UpdateProfile(updatedProfile);
         _repo.SaveChanges();

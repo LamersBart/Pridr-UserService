@@ -63,36 +63,19 @@ public class EventProcessor : IEventProcessor
         using (var scope = _serviceScopeFactory.CreateScope())
         {
             var profileRepo = scope.ServiceProvider.GetRequiredService<IProfileRepo>();
-            var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepo>();
             var keycloakEvent = JsonSerializer.Deserialize<KeycloakEventDto>(keyCloakPublishedMessage);
             try
             {
-                var newUser = _mapper.Map<User>(keycloakEvent);
-                if (!userRepo.UserExist(newUser.KeyCloakId))
+                Profile newProfile = _mapper.Map<Profile>(keycloakEvent);
+                if (!profileRepo.ProfileExist(newProfile.KeyCloakId))
                 {
-                    userRepo.CreateUser(newUser);
-                    userRepo.SaveChanges();
-                    Profile newProfile = new Profile
-                    {
-                        UserId = newUser.Id,
-                        Sexuality = Sexuality.Unknown,
-                        LookingFor = LookingFor.Friendship,
-                        Age = 0,
-                        Latitude = 0.0,
-                        Longitude = 0.0,
-                        Weight = 0.0,
-                        Height = 0.0,
-                        RelationStatus = RelationStatus.Unknown,
-                        PartnerUserId = 0,
-                        UserName = ""
-                    };
                     profileRepo.CreateProfile(newProfile);
                     profileRepo.SaveChanges();
                     Console.WriteLine("--> User Added!");
                 }
                 else
                 {
-                    Console.WriteLine($"--> User {newUser.KeyCloakId} already exists");
+                    Console.WriteLine($"--> User {newProfile.KeyCloakId} already exists");
                 }
             }
             catch (Exception ex)

@@ -10,10 +10,9 @@ public class ProfilesProfile : Profile
     {
         // source -> target
         CreateMap<Models.Profile, ProfileReadDto>();
-        CreateMap<KeycloakEventDto, User>()
-            .ForMember(dest => dest.KeyCloakId, opt => opt.MapFrom(src => src.UserId))
-            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Details.Email));
-        CreateMap<User, UserReadDto>();
+        CreateMap<KeycloakEventDto, Models.Profile>()
+            .ForMember(dest => dest.KeyCloakId, opt => opt.MapFrom(src => src.UserId));
+        CreateMap<Models.Profile, ProfileUserNameDto>();
         CreateMap<ProfileUpdateDto, Models.Profile>();
         CreateMap<ProfileUpdateLocationDto, Models.Profile>();
     }

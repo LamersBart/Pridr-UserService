@@ -21,9 +21,16 @@ public class ProfileRepo : IProfileRepo
         return _context.Profiles.ToList();
     }
 
-    public Profile GetProfileById(int id)
+    public IEnumerable<Profile> GetUserNames(List<string> ids)
     {
-        return _context.Profiles.FirstOrDefault(p => p.Id == id)!;
+        return _context.Profiles
+            .Where(p => ids.Contains(p.KeyCloakId))
+            .ToList();
+    }
+
+    public Profile GetProfileById(string keycloakUserId)
+    {
+        return _context.Profiles.FirstOrDefault(p => p.KeyCloakId == keycloakUserId)!;
     }
 
     public void CreateProfile(Profile profile)
@@ -35,9 +42,9 @@ public class ProfileRepo : IProfileRepo
         _context.Profiles.Add(profile);
     }
 
-    public bool ProfileExist(int profileId)
+    public bool ProfileExist(string keycloakUserId)
     {
-        return _context.Profiles.Any(p => p.Id == profileId);
+        return _context.Profiles.Any(p => p.KeyCloakId == keycloakUserId);
     }
 
     public void UpdateProfile(Profile profile)

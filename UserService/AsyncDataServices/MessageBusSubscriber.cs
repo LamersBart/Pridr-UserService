@@ -31,7 +31,7 @@ public class MessageBusSubscriber : BackgroundService
         };
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();
-        _queueName = _channel.QueueDeclare("KeycloakEvents");
+        _queueName = _channel.QueueDeclare();
         var routingKeys = new[]
         {
             "KK.EVENT.CLIENT.pridr.SUCCESS.#.REGISTER",

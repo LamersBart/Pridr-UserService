@@ -6,8 +6,9 @@ public interface IProfileRepo
 {
     bool SaveChanges();
     IEnumerable<Profile> GetAllProfiles();
-    Profile GetProfileById(int id);
+    IEnumerable<Profile> GetUserNames(List<string> ids);
+    Profile GetProfileById(string keycloakUserId);
     void CreateProfile(Profile profile);
-    bool ProfileExist(int profileId);
+    bool ProfileExist(string keycloakUserId);
     void UpdateProfile(Profile profile);
 }

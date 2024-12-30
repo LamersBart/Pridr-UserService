@@ -93,10 +93,19 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IProfileRepo, ProfileRepo>();
-builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddSingleton<IEventProcessor, EventProcessor>();
 builder.Services.AddHostedService<MessageBusSubscriber>();
 builder.Services.AddControllers();
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy("reactApp", p =>
+    {
+        p.WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
 EncryptionHelper.Initialize(builder.Configuration);
 
 var app = builder.Build();
@@ -107,4 +116,5 @@ PrepDb.PrepPopulation(app, environment.IsProduction());
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.UseCors("reactApp");
 app.Run();
