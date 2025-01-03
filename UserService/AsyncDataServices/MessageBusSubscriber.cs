@@ -36,7 +36,8 @@ public class MessageBusSubscriber : BackgroundService
         {
             "KK.EVENT.CLIENT.pridr.SUCCESS.#.REGISTER",
             "KK.EVENT.CLIENT.pridr.SUCCESS.#.LOGIN",
-            "KK.EVENT.CLIENT.pridr.SUCCESS.#.LOGOUT"
+            "KK.EVENT.CLIENT.pridr.SUCCESS.#.LOGOUT",
+            "KK.EVENT.CLIENT.pridr.SUCCESS.#.DELETE_ACCOUNT"
         };
         foreach (var routingKey in routingKeys)
         {

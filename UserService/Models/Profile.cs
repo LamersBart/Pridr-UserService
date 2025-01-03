@@ -38,7 +38,7 @@ public class Profile
     [MaxLength(30)]
     public string? UserName { get; set; }
     
-    public int? PartnerUserId { get; set; }
+    // public int? PartnerUserId { get; set; }
 
     public Profile()
     {
@@ -50,7 +50,7 @@ public class Profile
         Weight = 0.0;
         Height = 0.0;
         RelationStatus = RelationStatus.Unknown;
-        PartnerUserId = 0;
+        // PartnerUserId = 0;
         UserName = "";
     }
 }

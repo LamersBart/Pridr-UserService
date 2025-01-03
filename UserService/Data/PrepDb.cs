@@ -44,7 +44,7 @@ public static class PrepDb
                 Age = 28,
                 Height = 190.0,
                 Weight = 70.0,
-                PartnerUserId = 0,
+                // PartnerUserId = 0,
             },
             new Profile {
                 KeyCloakId = "290823097238926257253",
@@ -57,7 +57,7 @@ public static class PrepDb
                 Age = 20,
                 Height = 170.0,
                 Weight = 60.0,
-                PartnerUserId = 0,
+                // PartnerUserId = 0,
             });
             context.SaveChanges();
         }

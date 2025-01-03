@@ -11,4 +11,5 @@ public interface IProfileRepo
     void CreateProfile(Profile profile);
     bool ProfileExist(string keycloakUserId);
     void UpdateProfile(Profile profile);
+    void DeleteProfile(Profile profile);
 }

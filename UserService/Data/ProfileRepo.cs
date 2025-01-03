@@ -55,4 +55,9 @@ public class ProfileRepo : IProfileRepo
         }
         _context.Profiles.Update(profile);
     }
+
+    public void DeleteProfile(Profile profile)
+    {
+        _context.Profiles.Remove(profile);
+    }
 }

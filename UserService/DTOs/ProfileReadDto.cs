@@ -28,5 +28,5 @@ public class ProfileReadDto
 
     public string? UserName { get; set; }
     
-    public int? PartnerUserId  { get; set; }
+    // public int? PartnerUserId  { get; set; }
 }
