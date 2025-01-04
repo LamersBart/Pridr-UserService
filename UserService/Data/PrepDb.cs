@@ -32,43 +32,33 @@ public static class PrepDb
         if (!context.Profiles.Any())
         {
             Console.WriteLine("--> Seeding data");
-            context.User.AddRange(
-                new User
-                {
-                    KeyCloakId = "",
-                    Email = "admin@admin.com",
-                    Profile = new Profile
-                    {
-                        Sexuality = Sexuality.Unknown,
-                        LookingFor = LookingFor.Friendship,
-                        Latitude = 120.20291,
-                        Longitude = 12349.20202,
-                        UserName = "user2",
-                        RelationStatus = RelationStatus.Unknown,
-                        Age = 20,
-                        Height = 170.0,
-                        Weight = 60.0,
-                        PartnerUserId = 0,
-                    }
-                },
-                new User
-                {
-                    KeyCloakId = "",
-                    Email = "user@test.com",
-                    Profile = new Profile
-                    {
-                        Sexuality = Sexuality.Unknown,
-                        LookingFor = LookingFor.Fun,
-                        Latitude = 120.20291,
-                        Longitude = 12349.20202,
-                        UserName = "user1",
-                        RelationStatus = RelationStatus.Unknown,
-                        Age = 26,
-                        Height = 190.0,
-                        Weight = 72.0,
-                        PartnerUserId = 0
-                    }
-                });
+            context.Profiles.AddRange(
+            new Profile {
+                KeyCloakId = "23097294857348968936",
+                Sexuality = Sexuality.Unknown,
+                LookingFor = LookingFor.Friendship,
+                Latitude = 120.20291,
+                Longitude = 12349.20202,
+                UserName = "user1",
+                RelationStatus = RelationStatus.Unknown,
+                Age = 28,
+                Height = 190.0,
+                Weight = 70.0,
+                // PartnerUserId = 0,
+            },
+            new Profile {
+                KeyCloakId = "290823097238926257253",
+                Sexuality = Sexuality.Unknown,
+                LookingFor = LookingFor.Friendship,
+                Latitude = 120.20291,
+                Longitude = 12349.20202,
+                UserName = "user2",
+                RelationStatus = RelationStatus.Unknown,
+                Age = 20,
+                Height = 170.0,
+                Weight = 60.0,
+                // PartnerUserId = 0,
+            });
             context.SaveChanges();
         }
         else

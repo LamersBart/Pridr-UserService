@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using UserService.Data.Encryption;
 using UserService.Models;
 
 namespace UserService.Data;
@@ -7,11 +8,8 @@ public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
     public DbSet<Profile> Profiles { get; set; }
-    public DbSet<User> User { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<User>()
-            .HasOne(u => u.Profile);
         
         modelBuilder.Entity<Profile>(entity =>
         { 
@@ -45,10 +43,10 @@ public class AppDbContext : DbContext
             entity.Property(e => e.Age)
                 .HasConversion(new EncryptedValueConverter<int>());
             
-            entity.Property(e => e.PartnerUserId)
-                .HasColumnType("text");
-            entity.Property(e => e.PartnerUserId)
-                .HasConversion(new EncryptedValueConverter<int>());
+            // entity.Property(e => e.PartnerUserId)
+            //     .HasColumnType("text");
+            // entity.Property(e => e.PartnerUserId)
+            //     .HasConversion(new EncryptedValueConverter<int>());
         });
     }
 }

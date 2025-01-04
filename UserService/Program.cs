@@ -1,29 +1,39 @@
+using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 using UserService.AsyncDataServices;
 using UserService.Data;
+using UserService.Data.Encryption;
 using UserService.EventProcessing;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var environment = builder.Environment;
+if (environment.IsDevelopment())
+{
+    Console.WriteLine("Loading .env file in Development environment...");
+    Env.Load();
+}
+builder.Configuration.AddEnvironmentVariables();
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(o =>
     {
         o.RequireHttpsMetadata = false;
-        o.Audience = builder.Configuration["Authentication:Audience"];
-        o.MetadataAddress = builder.Configuration["Authentication:MetadataAddress"]!;
+        o.Audience = Environment.GetEnvironmentVariable("AUTH_AUDIENCE");
+        o.MetadataAddress = Environment.GetEnvironmentVariable("AUTH_METADATA")!;
         o.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidIssuer = builder.Configuration["Authentication:ValidIssuer"],
+            ValidIssuer = Environment.GetEnvironmentVariable("AUTH_ISSUER"),
         };
     });
 
 builder.Services.AddAuthorization();
 
-var environment = builder.Environment;
 var contact = new OpenApiContact
 {
     Name = "Bart Lamers",
@@ -55,7 +65,7 @@ builder.Services.AddSwaggerGen(o =>
         {
             Implicit = new OpenApiOAuthFlow
             {
-                AuthorizationUrl = new Uri(builder.Configuration["Keycloak:AuthorizationUrl"]!),
+                AuthorizationUrl = new Uri(Environment.GetEnvironmentVariable("KEYCLOAK_URL")!),
                 Scopes = new Dictionary<string, string>
                 {
                     {"openid", "openid"},
@@ -84,20 +94,38 @@ builder.Services.AddSwaggerGen(o =>
     o.SwaggerDoc("v1", info);
     o.AddSecurityRequirement(securityRequirement);
 });
-
+var connectionStringBuilder = new NpgsqlConnectionStringBuilder
+{
+    Host = Environment.GetEnvironmentVariable("PGHOST"),
+    Port = int.Parse(Environment.GetEnvironmentVariable("PGPORT") ?? "5432"),
+    Database = Environment.GetEnvironmentVariable("PGDB"),
+    Username = Environment.GetEnvironmentVariable("PGUSER"),
+    Password = Environment.GetEnvironmentVariable("PGPASS")
+};
+var connectionString = connectionStringBuilder.ConnectionString;
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     Console.WriteLine("Using in Postgres DB");
-    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection"));
+    options.UseNpgsql(connectionString);
 });
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IProfileRepo, ProfileRepo>();
-builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddSingleton<IEventProcessor, EventProcessor>();
 builder.Services.AddHostedService<MessageBusSubscriber>();
+builder.Services.AddSingleton<IMessageBusClient, MessageBusClient>();
 builder.Services.AddControllers();
-EncryptionHelper.Initialize(builder.Configuration);
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy("reactApp", p =>
+    {
+        p.WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+EncryptionHelper.Initialize();
 
 var app = builder.Build();
 
@@ -107,4 +135,5 @@ PrepDb.PrepPopulation(app, environment.IsProduction());
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.UseCors("reactApp");
 app.Run();

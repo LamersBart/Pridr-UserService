@@ -6,6 +6,8 @@ public class ProfileReadDto
 {
     public required int Id { get; set; }
     
+    public required string KeyCloakId { get; set; }
+    
     public required int UserId { get; set; }
     
     public required Sexuality Sexuality { get; set; }
@@ -26,5 +28,5 @@ public class ProfileReadDto
 
     public string? UserName { get; set; }
     
-    public int? PartnerUserId  { get; set; }
+    // public int? PartnerUserId  { get; set; }
 }
