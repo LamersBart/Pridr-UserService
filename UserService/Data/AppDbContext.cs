@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using UserService.Data.Encryption;
 using UserService.Models;
 
 namespace UserService.Data;

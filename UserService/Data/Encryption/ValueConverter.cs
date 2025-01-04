@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace UserService.Data;
+namespace UserService.Data.Encryption;
 
 public class EncryptedValueConverter<T> : ValueConverter<T?, string?> where T : struct
 {

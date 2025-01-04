@@ -7,17 +7,15 @@ namespace UserService.AsyncDataServices;
 
 public class MessageBusClient : IMessageBusClient
 {
-    private readonly IConfiguration _configuration;
     private readonly IConnection? _connection;
     private readonly IModel? _channel;
 
-    public MessageBusClient(IConfiguration configuration)
+    public MessageBusClient()
     {
-        _configuration = configuration;
         var factory = new ConnectionFactory()
         {
-            HostName = _configuration["RabbitMQHost"],
-            Port = int.Parse(_configuration["RabbitMQPort"]!),
+            HostName = Environment.GetEnvironmentVariable("MQHOST"),
+            Port = int.Parse(Environment.GetEnvironmentVariable("MQPORT")!),
             ClientProvidedName = "UserService",
         };
         try

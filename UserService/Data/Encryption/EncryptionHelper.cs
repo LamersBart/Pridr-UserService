@@ -1,15 +1,15 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace UserService.Data;
+namespace UserService.Data.Encryption;
 
 public static class EncryptionHelper
 {
     private static string? _encryptionKey;
 
-    public static void Initialize(IConfiguration configuration)
+    public static void Initialize()
     {
-        _encryptionKey = configuration["Encryption:Key"]!;
+        _encryptionKey = Environment.GetEnvironmentVariable("ENCRYPTION_KEY")!;
         if (string.IsNullOrEmpty(_encryptionKey))
         {
             throw new InvalidOperationException("Encryption key is missing in appsettings.");
