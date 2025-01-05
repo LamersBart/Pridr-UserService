@@ -119,7 +119,11 @@ builder.Services.AddCors(opt =>
 {
     opt.AddPolicy("reactApp", p =>
     {
-        p.WithOrigins("http://localhost:5173")
+        p.WithOrigins("http://localhost:5173, http://localhost:60105")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+        p.WithOrigins("http://lamersdevlocal.com, https://lamersdevlocal.com")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
