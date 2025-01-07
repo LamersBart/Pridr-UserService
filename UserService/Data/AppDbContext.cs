@@ -43,5 +43,6 @@ public class AppDbContext : DbContext
             entity.Property(e => e.Age)
                 .HasConversion(new EncryptedValueConverter<int>());
         });
+        // data seeden 
     }
 }

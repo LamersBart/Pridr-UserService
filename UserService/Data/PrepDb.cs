@@ -21,7 +21,10 @@ public static class PrepDb
             Console.WriteLine("--> Attemt to apply migrations...");
             try
             { 
-                await context.Database.MigrateAsync();
+                if (await context.Database.GetPendingMigrationsAsync() is { } migrations && migrations.Any())
+                {
+                    await context.Database.MigrateAsync();
+                }
                 Console.WriteLine("--> Migrations applied.");
             }
             catch (Exception ex)
@@ -31,7 +34,7 @@ public static class PrepDb
             if (!await context.Profiles.AnyAsync())
             {
                 Console.WriteLine("--> Seeding data");
-                context.Profiles.AddRange(
+                await context.Profiles.AddRangeAsync(
                     new Profile {
                         KeyCloakId = "23097294857348968936",
                         Sexuality = Sexuality.Unknown,
