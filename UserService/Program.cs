@@ -108,7 +108,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     Console.WriteLine("Using in Postgres DB");
     options.UseNpgsql(connectionString);
 });
-
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IProfileRepo, ProfileRepo>();
 builder.Services.AddSingleton<IEventProcessor, EventProcessor>();
@@ -119,11 +118,7 @@ builder.Services.AddCors(opt =>
 {
     opt.AddPolicy("reactApp", p =>
     {
-        p.WithOrigins("http://localhost:5173, http://localhost:60105")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-        p.WithOrigins("http://lamersdevlocal.com, https://lamersdevlocal.com")
+        p.WithOrigins("https://demo.pridr.app")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -133,9 +128,13 @@ EncryptionHelper.Initialize();
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI(o => o.EnableTryItOutByDefault());
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(o => o.EnableTryItOutByDefault());
+}
 await PrepDb.PrepPopulation(app, environment.IsProduction());
+app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
