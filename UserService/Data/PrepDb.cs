@@ -26,45 +26,46 @@ public static class PrepDb
                     await context.Database.MigrateAsync();
                 }
                 Console.WriteLine("--> Migrations applied.");
+                // if (!await context.Profiles.AnyAsync())
+                // {
+                //     Console.WriteLine("--> Seeding data");
+                //     await context.Profiles.AddRangeAsync(
+                //         new Profile {
+                //             KeyCloakId = "23097294857348968936",
+                //             Sexuality = Sexuality.Unknown,
+                //             LookingFor = LookingFor.Friendship,
+                //             Latitude = 120.20291,
+                //             Longitude = 12349.20202,
+                //             UserName = "user1",
+                //             RelationStatus = RelationStatus.Unknown,
+                //             Age = 28,
+                //             Height = 190.0,
+                //             Weight = 70.0,
+                //         },
+                //         new Profile {
+                //             KeyCloakId = "290823097238926257253",
+                //             Sexuality = Sexuality.Unknown,
+                //             LookingFor = LookingFor.Friendship,
+                //             Latitude = 120.20291,
+                //             Longitude = 12349.20202,
+                //             UserName = "user2",
+                //             RelationStatus = RelationStatus.Unknown,
+                //             Age = 20,
+                //             Height = 170.0,
+                //             Weight = 60.0,
+                //         });
+                //     await context.SaveChangesAsync();
+                // }
+                // else
+                // {
+                //     Console.WriteLine("--> We already have data");
+                // }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"--> Could not run migrations: {ex.Message}");
             }
-            if (!await context.Profiles.AnyAsync())
-            {
-                Console.WriteLine("--> Seeding data");
-                await context.Profiles.AddRangeAsync(
-                    new Profile {
-                        KeyCloakId = "23097294857348968936",
-                        Sexuality = Sexuality.Unknown,
-                        LookingFor = LookingFor.Friendship,
-                        Latitude = 120.20291,
-                        Longitude = 12349.20202,
-                        UserName = "user1",
-                        RelationStatus = RelationStatus.Unknown,
-                        Age = 28,
-                        Height = 190.0,
-                        Weight = 70.0,
-                    },
-                    new Profile {
-                        KeyCloakId = "290823097238926257253",
-                        Sexuality = Sexuality.Unknown,
-                        LookingFor = LookingFor.Friendship,
-                        Latitude = 120.20291,
-                        Longitude = 12349.20202,
-                        UserName = "user2",
-                        RelationStatus = RelationStatus.Unknown,
-                        Age = 20,
-                        Height = 170.0,
-                        Weight = 60.0,
-                    });
-                await context.SaveChangesAsync();
-            }
-            else
-            {
-                Console.WriteLine("--> We already have data");
-            }
+
         }
     }
 }
