@@ -7,7 +7,6 @@ namespace UserService.Models;
 public class Profile
 {
     [Key]
-    [Required]
     public int Id { get; set; }
     
     [MaxLength(60)]
