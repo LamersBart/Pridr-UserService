@@ -45,4 +45,5 @@ EXPOSE 8080
 EXPOSE 8081
 
 # Entry point
+ENTRYPOINT ["dotnet", "ef", "database", "update", "--no-build"]
 ENTRYPOINT ["dotnet", "UserService.dll"]
