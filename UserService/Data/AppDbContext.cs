@@ -42,11 +42,7 @@ public class AppDbContext : DbContext
                 .HasColumnType("text");
             entity.Property(e => e.Age)
                 .HasConversion(new EncryptedValueConverter<int>());
-            
-            // entity.Property(e => e.PartnerUserId)
-            //     .HasColumnType("text");
-            // entity.Property(e => e.PartnerUserId)
-            //     .HasConversion(new EncryptedValueConverter<int>());
         });
+        // data seeden 
     }
 }

@@ -135,7 +135,7 @@ var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI(o => o.EnableTryItOutByDefault());
-PrepDb.PrepPopulation(app, environment.IsProduction());
+await PrepDb.PrepPopulation(app, environment.IsProduction());
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
