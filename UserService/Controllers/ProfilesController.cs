@@ -18,14 +18,12 @@ public class ProfilesController : ControllerBase
     private readonly IProfileRepo _repo;
     private readonly IMapper _mapper;
     private readonly IMessageBusClient _messageBusClient;
-    private readonly IConfiguration _configuration;
 
-    public ProfilesController(IProfileRepo repo, IMapper mapper, IMessageBusClient messageBusClient, IConfiguration configuration)
+    public ProfilesController(IProfileRepo repo, IMapper mapper, IMessageBusClient messageBusClient)
     {
         _repo = repo;
         _mapper = mapper;
         _messageBusClient = messageBusClient;
-        _configuration = configuration;
     }
     
 
@@ -122,18 +120,6 @@ public class ProfilesController : ControllerBase
         _repo.UpdateProfile(updatedProfile);
         _repo.SaveChanges();
         return Ok(_mapper.Map<ProfileReadDto>(updatedProfile));
-    }
-    
-    [HttpGet("config")]
-    public IActionResult GetConfig()
-    {
-        var mqHost = Environment.GetEnvironmentVariable("MQHOST");
-        var pgUser = Environment.GetEnvironmentVariable("PGUSER");
-        var authUrl = Environment.GetEnvironmentVariable("KEYCLOAK_URL");
-        var authAdress = Environment.GetEnvironmentVariable("AUTH_METADATA");
-        var encryptionKey = Environment.GetEnvironmentVariable("ENCRYPTION_KEY");
-
-        return Ok(new { MQHost = mqHost, PGUser = pgUser, AuthUrl = authUrl, AuthAdress = authAdress, EncryptionKey = encryptionKey });
     }
     
     private static Dictionary<string, object> DecodeJwt(string bearerToken)
