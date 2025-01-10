@@ -16,6 +16,8 @@ public class MessageBusClient : IMessageBusClient
         {
             HostName = Environment.GetEnvironmentVariable("MQHOST"),
             Port = int.Parse(Environment.GetEnvironmentVariable("MQPORT")!),
+            UserName = Environment.GetEnvironmentVariable("MQUSER"),
+            Password = Environment.GetEnvironmentVariable("MQPASS"),
             ClientProvidedName = "UserService",
         };
         try
