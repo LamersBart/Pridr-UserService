@@ -1,5 +1,4 @@
 using DotNetEnv;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -9,7 +8,6 @@ using UserService.AsyncDataServices;
 using UserService.Data;
 using UserService.Data.Encryption;
 using UserService.EventProcessing;
-using UserService.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,33 +19,21 @@ if (environment.IsDevelopment())
 }
 builder.Configuration.AddEnvironmentVariables();
 
-var disableAuth = Environment.GetEnvironmentVariable("DISABLE_AUTH") == "true";
-
-if (disableAuth)
-{
-    Console.WriteLine("Disabling auth...");
-    // Schakel Keycloak-authenticatie uit
-    builder.Services.AddAuthentication("Test")
-        .AddScheme<AuthenticationSchemeOptions, TestAuthenticationHandler>("Test", options => { });
-}
-else
-{
-    Console.WriteLine("Auth enabled...");
-    builder.Services
-        .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        .AddJwtBearer(o =>
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(o =>
+    {
+        o.RequireHttpsMetadata = false;
+        o.Audience = Environment.GetEnvironmentVariable("AUTH_AUDIENCE");
+        o.MetadataAddress = Environment.GetEnvironmentVariable("AUTH_METADATA")!;
+        o.TokenValidationParameters = new TokenValidationParameters
         {
-            o.RequireHttpsMetadata = false;
-            o.Audience = Environment.GetEnvironmentVariable("AUTH_AUDIENCE");
-            o.MetadataAddress = Environment.GetEnvironmentVariable("AUTH_METADATA")!;
-            o.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidIssuer = Environment.GetEnvironmentVariable("AUTH_ISSUER"),
-            };
-        });
+            ValidIssuer = Environment.GetEnvironmentVariable("AUTH_ISSUER"),
+        };
+    });
 
-    builder.Services.AddAuthorization();
-}
+builder.Services.AddAuthorization();
+
 var contact = new OpenApiContact
 {
     Name = "Bart Lamers",

@@ -26,8 +26,6 @@ public class ProfilesController : ControllerBase
         _messageBusClient = messageBusClient;
     }
     
-
-
     [HttpGet()]
     public ActionResult<IEnumerable<ProfileReadDto>> GetProfiles()
     {
@@ -122,6 +120,45 @@ public class ProfilesController : ControllerBase
         return Ok(_mapper.Map<ProfileReadDto>(updatedProfile));
     }
     
+    [AllowAnonymous]
+    [HttpPatch("test")]
+    public ActionResult<ProfileReadDto> UpdateProfileTest(ProfileUpdateDto profileUpdateDto)
+    {
+        var disableAuth = Environment.GetEnvironmentVariable("DISABLE_AUTH") == "true";
+        if (!disableAuth)
+        {
+            return NotFound("This endpoint is available only when testmode is enabled.");
+        }
+        if (!_repo.ProfileExist("a6427685-84e3-4fbf-8716-c94d1053b020"))
+        {
+            return NotFound();
+        }
+        string oldName = String.Empty;
+        Console.WriteLine($"--> Updating Profile By Id: a6427685-84e3-4fbf-8716-c94d1053b020...");
+        Profile profile = _repo.GetProfileById("a6427685-84e3-4fbf-8716-c94d1053b020");
+        if (profile.UserName != null)
+        {
+            oldName = profile.UserName!;
+        }
+        Profile updatedProfile = _mapper.Map(profileUpdateDto, profile);
+        _repo.UpdateProfile(updatedProfile);
+        _repo.SaveChanges();
+        if (oldName != updatedProfile.UserName)
+        {
+            try
+            {
+                var x = _mapper.Map<ProfileUserNameDto>(updatedProfile);
+                x.EventType = "Updated_UserName";
+                _messageBusClient.ProfileUserNameUpdate(x);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"--> Could not send asynchronously: {ex.Message}");
+            }
+        }
+        return Ok(_mapper.Map<ProfileReadDto>(updatedProfile));
+    }
+
     private static Dictionary<string, object> DecodeJwt(string bearerToken)
     {
         try
