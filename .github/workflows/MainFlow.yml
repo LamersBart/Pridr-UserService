@@ -5,6 +5,7 @@ jobs:
   scan:
     name: SonarQube scan
     runs-on: windows-latest
+    
     steps:
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -47,6 +48,7 @@ jobs:
     name: Qualitiy gate check
     needs: scan 
     runs-on: ubuntu-22.04
+    
     steps:
       - name: Quality Gate Check
         run: |
@@ -59,10 +61,12 @@ jobs:
               echo "Quality Gate failed!"
               exit 1
           fi
+  
   build:
     name: Build and push docker image
     needs: [scan, qualitiy]
     runs-on: ubuntu-22.04
+    
     steps:
     - uses: actions/checkout@v4
       
@@ -74,3 +78,38 @@ jobs:
       
     - name: push image to hub
       run: docker push lamersbart/pridr-userservice:latest
+      
+  integration-tests:
+    name: Trigger Integration Tests
+    needs: [scan, qualitiy, build]
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Trigger Integration Tests Workflow
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            https://api.github.com/repos/LamersBart/Pridr-IntergrationTest/actions/workflows/main.yml/dispatches \
+            -d '{"ref":"main"}'
+
+      - name: Wait for Integration Test Completion
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const result = await github.actions.listWorkflowRuns({
+              owner: 'LamersBart',
+              repo: 'Pridr-IntergrationTest',
+              workflow_id: 'main.yml',
+              branch: 'main',
+              per_page: 1,
+              status: 'completed'
+            });
+            const run = result.data.workflow_runs[0];
+            if (!run || run.conclusion !== 'success') {
+              core.setFailed('Integration tests failed!');
+            } else {
+              console.log('Integration tests succeeded!');
+            }
