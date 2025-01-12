@@ -26,18 +26,43 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const result = await github.rest.actions.listWorkflowRuns({
-              owner: 'LamersBart',
-              repo: 'Pridr-IntergrationTest',
-              workflow_id: 137682142,
-              branch: 'main',
-              per_page: 1,
-              status: 'completed'
-            });
+            const owner = 'LamersBart';
+            const repo = 'Pridr-IntergrationTest';
+            const workflowId = 137682142;
+            const branch = 'main';
+            const perPage = 1;
 
-            const run = result.data.workflow_runs[0];
-            if (!run || run.conclusion !== 'success') {
-              core.setFailed('Integration tests failed!');
+            console.log("Wachten op voltooiing van de workflow...");
+            let isCompleted = false;
+            let run;
+            let attempts = 0;
+            const maxAttempts = 30; // Maximaal aantal pogingen om te wachten
+            const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+            while (!isCompleted && attempts < maxAttempts) {
+              const result = await github.rest.actions.listWorkflowRuns({
+                owner,
+                repo,
+                workflow_id: workflowId,
+                branch,
+                per_page: perPage,
+                status: 'in_progress',
+              });
+
+              run = result.data.workflow_runs[0];
+              if (run && run.status === 'completed') {
+                isCompleted = true;
+              } else {
+                console.log(`Workflow nog niet voltooid. Wacht 10 seconden... (Poging ${attempts + 1}/${maxAttempts})`);
+                await delay(10000); // Wacht 10 seconden
+                attempts++;
+              }
+            }
+
+            if (!run || run.status !== 'completed') {
+              core.setFailed('Workflow is niet voltooid binnen de maximale wachttijd.');
+            } else if (run.conclusion !== 'success') {
+              core.setFailed(`Workflow is voltooid maar mislukt: ${run.conclusion}`);
             } else {
-              console.log('Integration tests succeeded!');
+              console.log('Workflow succesvol voltooid!');
             }
