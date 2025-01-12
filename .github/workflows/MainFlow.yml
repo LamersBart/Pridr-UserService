@@ -11,19 +11,25 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
+        
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0'
-
+          
       - name: Restore dependencies
         run: dotnet restore ./UserService/UserService.csproj
-
+        
       - name: Build solution
         run: dotnet build ./UserService/UserService.csproj --no-restore --configuration Release
-
+        
+      - name: Install dependencies
+        run: dotnet restore ./UserService.Tests/UserService.Tests.csproj
+        
       - name: Run tests
+        env:
+          DOTNET_CLI_TELEMETRY_OPTOUT: 1
+          DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
         run: dotnet test ./UserService.Tests/UserService.Tests.csproj --no-restore --logger "console;verbosity=detailed"
   scan:
     name: SonarQube scan
@@ -35,15 +41,18 @@ jobs:
         with:
           java-version: 17
           distribution: 'zulu'
+          
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          
       - name: Cache SonarQube Cloud packages
         uses: actions/cache@v4
         with:
           path: ~\sonar\cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
+          
       - name: Cache SonarQube Cloud scanner
         id: cache-sonar-scanner
         uses: actions/cache@v4
@@ -51,12 +60,14 @@ jobs:
           path: .\.sonar\scanner
           key: ${{ runner.os }}-sonar-scanner
           restore-keys: ${{ runner.os }}-sonar-scanner
+          
       - name: Install SonarQube Cloud scanner
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         shell: powershell
         run: |
           New-Item -Path .\.sonar\scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+          
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
