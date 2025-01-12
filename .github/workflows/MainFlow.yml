@@ -192,3 +192,4 @@ jobs:
           }
 
           # Start controle
+          check_workflow_status
