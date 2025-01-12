@@ -18,13 +18,13 @@ jobs:
           dotnet-version: '8.0'
 
       - name: Restore dependencies
-        run: dotnet restore /UserService/UserService.csproj
+        run: dotnet restore .UserService/UserService.csproj
 
       - name: Build solution
-        run: dotnet build /UserService/UserService.csproj --no-restore --configuration Release
+        run: dotnet build .UserService/UserService.csproj --no-restore --configuration Release
 
       - name: Run tests
-        run: dotnet test /UserService/UserService.Tests.csproj --no-restore --logger "console;verbosity=detailed"
+        run: dotnet test .UserService.Tests/UserService.Tests.csproj --no-restore --logger "console;verbosity=detailed"
   scan:
     name: SonarQube scan
     needs: [build-and-test]
