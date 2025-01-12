@@ -8,8 +8,6 @@ public class ProfileReadDto
     
     public required string KeyCloakId { get; set; }
     
-    public required int UserId { get; set; }
-    
     public required Sexuality Sexuality { get; set; }
     
     public required LookingFor LookingFor  { get; set; }
@@ -28,5 +26,4 @@ public class ProfileReadDto
 
     public string? UserName { get; set; }
     
-    // public int? PartnerUserId  { get; set; }
 }
