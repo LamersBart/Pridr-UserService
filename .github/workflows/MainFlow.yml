@@ -83,6 +83,9 @@ jobs:
     name: Trigger Integration Tests
     needs: [scan, build]
     runs-on: ubuntu-22.04
+    permissions:
+      actions: write
+      contents: read
 
     steps:
       - name: Trigger Integration Tests Workflow
@@ -92,17 +95,17 @@ jobs:
           curl -X POST \
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: Bearer $GITHUB_TOKEN" \
-            https://api.github.com/repos/LamersBart/Pridr-IntergrationTest/actions/workflows/main.yml/dispatches \
+            https://api.github.com/repos/LamersBart/Pridr-IntergrationTest/actions/workflows/Testcontainers-Integration-Tests.yml/dispatches \
             -d '{"ref":"main"}'
 
       - name: Wait for Integration Test Completion
         uses: actions/github-script@v6
         with:
           script: |
-            const result = await github.actions.listWorkflowRuns({
+            const result = await github.rest.actions.listWorkflowRuns({
               owner: 'LamersBart',
               repo: 'Pridr-IntergrationTest',
-              workflow_id: 'main.yml',
+              workflow_id: 'Testcontainers-Integration-Tests.yml',
               branch: 'main',
               per_page: 1,
               status: 'completed'
