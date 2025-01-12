@@ -53,50 +53,56 @@ jobs:
 
       - name: Wait for Integration Test Completion
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
           run_id: ${{ env.run_id }}
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const owner = 'LamersBart';
-            const repo = 'Pridr-IntergrationTest';
-            const runId = process.env.run_id;
+        run: |
+          if [ -z "${{ env.run_id }}" ]; then
+            echo "Fout: run_id is niet ingesteld!"
+            exit 1
+          fi
 
-            if (!runId) {
-              core.setFailed('Fout: run_id is niet beschikbaar.');
-              return;
-            }
+          echo "Controleren van workflow-run met ID: ${{ env.run_id }}..."
 
-            console.log(`Controleren van de workflow-run met ID: ${runId}`);
+          # Functie om met een wachttijd te blijven checken
+          check_workflow_status() {
+            local attempts=0
+            local max_attempts=30
+            local delay=10
 
-            const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-            let isCompleted = false;
-            let attempts = 0;
-            const maxAttempts = 30;
+            while [ $attempts -lt $max_attempts ]; do
+              echo "Poging $((attempts + 1)) van $max_attempts om de status op te halen..."
 
-            while (!isCompleted && attempts < maxAttempts) {
-              const result = await github.rest.actions.getWorkflowRun({
-                owner,
-                repo,
-                run_id: runId,
-              });
+              response=$(curl -s \
+                -H "Accept: application/vnd.github.v3+json" \
+                -H "Authorization: Bearer $PAT_TOKEN" \
+                "https://api.github.com/repos/LamersBart/Pridr-IntergrationTest/actions/runs/${{ env.run_id }}")
 
-              const run = result.data;
-              if (run.status === 'completed') {
-                isCompleted = true;
-                if (run.conclusion === 'success') {
-                  console.log('Integration tests succesvol voltooid!');
-                } else {
-                  core.setFailed(`Integration tests gefaald: ${run.conclusion}`);
-                }
-              } else {
-                console.log(`Workflow-run nog bezig. Wacht 10 seconden... (${attempts + 1}/${maxAttempts})`);
-                await delay(10000);
-                attempts++;
-              }
-            }
+              # Debug: log de volledige response
+              echo "API-response: $response"
 
-            if (!isCompleted) {
-              core.setFailed('Workflow-run is niet voltooid binnen de maximale wachttijd.');
-            }
+              status=$(echo "$response" | jq -r '.status')
+              conclusion=$(echo "$response" | jq -r '.conclusion')
+
+              if [ "$status" = "completed" ]; then
+                if [ "$conclusion" = "success" ]; then
+                  echo "Workflow succesvol voltooid!"
+                  return 0
+                else
+                  echo "Workflow mislukt met conclusie: $conclusion"
+                  exit 1
+                fi
+              fi
+
+              echo "Workflow nog bezig. Wachten $delay seconden..."
+              sleep $delay
+              attempts=$((attempts + 1))
+            done
+
+            echo "Workflow niet voltooid binnen de maximale wachttijd!"
+            exit 1
+          }
+
+          # Start controle
+          check_workflow_status
+
 
