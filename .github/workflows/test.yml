@@ -15,12 +15,36 @@ jobs:
       - name: Trigger Integration Tests Workflow
         env:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+        id: trigger-workflow
         run: |
+          # Start de workflow
           curl -X POST \
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: Bearer $PAT_TOKEN" \
             https://api.github.com/repos/LamersBart/Pridr-IntergrationTest/actions/workflows/137682142/dispatches \
             -d '{"ref":"main"}'
+
+          # Wacht even zodat de run wordt geregistreerd
+          sleep 5
+
+          # Haal de laatste workflow-run op
+          response=$(curl -s \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: Bearer $PAT_TOKEN" \
+            https://api.github.com/repos/LamersBart/Pridr-IntergrationTest/actions/runs?branch=main&per_page=1)
+
+          echo "Response ontvangen: $response"
+
+          # Extract de run_id van de nieuwste workflow-run
+          run_id=$(echo "$response" | jq -r '.workflow_runs[0].id')
+
+          if [ -z "$run_id" ]; then
+            echo "Kon geen workflow-run ID ophalen!"
+            exit 1
+          fi
+
+          echo "Workflow-run ID: $run_id"
+          echo "run_id=$run_id" >> $GITHUB_ENV
 
       - name: Wait for Integration Test Completion
         uses: actions/github-script@v6
@@ -28,41 +52,37 @@ jobs:
           script: |
             const owner = 'LamersBart';
             const repo = 'Pridr-IntergrationTest';
-            const workflowId = 137682142;
-            const branch = 'main';
-            const perPage = 1;
-
-            console.log("Wachten op voltooiing van de workflow...");
-            let isCompleted = false;
-            let run;
-            let attempts = 0;
-            const maxAttempts = 30; // Maximaal aantal pogingen om te wachten
+            const runId = process.env.run_id; // Verkregen uit de vorige stap
             const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+            let isCompleted = false;
+            let attempts = 0;
+            const maxAttempts = 30;
+
+            console.log("Wachten op voltooiing van workflow-run...");
             while (!isCompleted && attempts < maxAttempts) {
-              const result = await github.rest.actions.listWorkflowRuns({
+              const result = await github.rest.actions.getWorkflowRun({
                 owner,
                 repo,
-                workflow_id: workflowId,
-                branch,
-                per_page: perPage,
-                status: 'in_progress',
+                run_id: runId,
               });
 
-              run = result.data.workflow_runs[0];
-              if (run && run.status === 'completed') {
+              const run = result.data;
+              if (run.status === 'completed') {
                 isCompleted = true;
+                if (run.conclusion === 'success') {
+                  console.log('Workflow succesvol voltooid!');
+                } else {
+                  core.setFailed(`Workflow is voltooid maar mislukt: ${run.conclusion}`);
+                }
               } else {
                 console.log(`Workflow nog niet voltooid. Wacht 10 seconden... (Poging ${attempts + 1}/${maxAttempts})`);
-                await delay(10000); // Wacht 10 seconden
+                await delay(10000);
                 attempts++;
               }
             }
 
-            if (!run || run.status !== 'completed') {
+            if (!isCompleted) {
               core.setFailed('Workflow is niet voltooid binnen de maximale wachttijd.');
-            } else if (run.conclusion !== 'success') {
-              core.setFailed(`Workflow is voltooid maar mislukt: ${run.conclusion}`);
-            } else {
-              console.log('Workflow succesvol voltooid!');
             }
+
