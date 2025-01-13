@@ -31,7 +31,14 @@ public class MessageBusSubscriber : BackgroundService
         };
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();
-        _queueName = _channel.QueueDeclare();
+        _queueName = "UserServiceQueue";
+        _channel.QueueDeclare(
+            queue: _queueName,
+            durable: true,
+            exclusive: false,
+            autoDelete: false,
+            arguments: null
+        );
         var routingKeys = new[]
         {
             "KK.EVENT.CLIENT.pridr.SUCCESS.#.REGISTER",
