@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using UserService.Models;
 
 namespace UserService.Data;
@@ -11,40 +12,40 @@ public class ProfileRepo : IProfileRepo
         _context = context;
     }
     
-    public bool SaveChanges()
+    public async Task<bool> SaveChangesAsync()
     {
-        return _context.SaveChanges() >= 0;
+        return await _context.SaveChangesAsync() >= 0;
     }
 
-    public IEnumerable<Profile> GetAllProfiles()
+    public async Task<IEnumerable<Profile>> GetAllProfilesAsync()
     {
-        return _context.Profiles.ToList();
+        return await _context.Profiles.ToListAsync();
     }
 
-    public IEnumerable<Profile> GetUserNames(List<string> ids)
+    public async Task<IEnumerable<Profile>> GetUserNamesAsync(List<string> ids)
     {
-        return _context.Profiles
+        return await _context.Profiles
             .Where(p => ids.Contains(p.KeyCloakId))
-            .ToList();
+            .ToListAsync();
     }
 
-    public Profile GetProfileById(string keycloakUserId)
+    public async Task<Profile> GetProfileByIdAsync(string keycloakUserId)
     {
-        return _context.Profiles.FirstOrDefault(p => p.KeyCloakId == keycloakUserId)!;
+        return await _context.Profiles.FirstOrDefaultAsync(p => p.KeyCloakId == keycloakUserId)!;
     }
 
-    public void CreateProfile(Profile profile)
+    public async Task CreateProfileAsync(Profile profile)
     {
         if (profile is null)
         {
             throw new ArgumentNullException(nameof(profile));
         }
-        _context.Profiles.Add(profile);
+        await _context.Profiles.AddAsync(profile);
     }
 
-    public bool ProfileExist(string keycloakUserId)
+    public async Task<bool> ProfileExistAsync(string keycloakUserId)
     {
-        return _context.Profiles.Any(p => p.KeyCloakId == keycloakUserId);
+        return await _context.Profiles.AnyAsync(p => p.KeyCloakId == keycloakUserId);
     }
 
     public void UpdateProfile(Profile profile)

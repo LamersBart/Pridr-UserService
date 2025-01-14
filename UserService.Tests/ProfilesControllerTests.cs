@@ -39,7 +39,7 @@ public class ProfilesControllerTests
     //  * _messageBusClient.ProfileUserNameUpdate wordt aangeroepen met de juiste waarden.
 
     [Fact]
-    public void UpdateProfile_SendsMessage_WhenUserNameChanges()
+    public async Task UpdateProfile_SendsMessage_WhenUserNameChanges()
     {
         var keyCloakId = "a6427685-84e3-4fbf-8716-c94d1053b020";
         
@@ -92,14 +92,14 @@ public class ProfilesControllerTests
             Longitude = 0
         };
 
-        _mockRepo.Setup(r => r.ProfileExist(keyCloakId)).Returns(true);
-        _mockRepo.Setup(r => r.GetProfileById(keyCloakId)).Returns(existingProfile);
+        _mockRepo.Setup(r => r.ProfileExistAsync(keyCloakId)).ReturnsAsync(true);
+        _mockRepo.Setup(r => r.GetProfileByIdAsync(keyCloakId)).ReturnsAsync(existingProfile);
         _mockMapper.Setup(m => m.Map(profileUpdateDto, existingProfile)).Returns(updatedProfile);
         _mockMapper.Setup(m => m.Map<ProfileUserNameDto>(updatedProfile)).Returns(profileUserNameDto);
         _mockMapper.Setup(m => m.Map<ProfileReadDto>(updatedProfile)).Returns(profileReadDto);
 
         // Act
-        var result = _controller.UpdateProfile(keyCloakId, profileUpdateDto);
+        var result = await _controller.UpdateProfile(keyCloakId, profileUpdateDto);
 
         // Assert
         var actionResult = Assert.IsType<ActionResult<ProfileReadDto>>(result);
@@ -108,9 +108,9 @@ public class ProfilesControllerTests
 
         Assert.Equal("newUsername", returnedProfile.UserName);
 
-        _mockRepo.Verify(r => r.GetProfileById(keyCloakId), Times.Once);
+        _mockRepo.Verify(r => r.GetProfileByIdAsync(keyCloakId), Times.Once);
         _mockRepo.Verify(r => r.UpdateProfile(updatedProfile), Times.Once);
-        _mockRepo.Verify(r => r.SaveChanges(), Times.Once);
+        _mockRepo.Verify(r => r.SaveChangesAsync(), Times.Once);
 
         _mockBus.Verify(mbc => mbc.ProfileUserNameUpdate(It.Is<ProfileUserNameDto>(dto =>
             dto.KeyCloakId == keyCloakId &&
