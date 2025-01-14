@@ -2,5 +2,5 @@ namespace UserService.EventProcessing;
 
 public interface IEventProcessor
 {
-    void ProcessEvent(string message);
+    Task ProcessEvent(string message);
 }

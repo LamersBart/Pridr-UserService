@@ -18,7 +18,7 @@ public class EventProcessor : IEventProcessor
         _mapper = mapper;
     }
     
-    public void ProcessEvent(string message)
+    public async Task ProcessEvent(string message)
     {
         Console.WriteLine($"--> Event received");
         var eventType = DetermineEvent(message);
@@ -26,11 +26,11 @@ public class EventProcessor : IEventProcessor
         {
             case EventType.Register:
                 Console.WriteLine($"--> Event: {message}");
-                AddUser(message);
+                await AddUser(message);
                 break;
             case EventType.Delete:
                 Console.WriteLine($"--> Event: {message}");
-                DeleteUser(message);
+                await DeleteUser(message);
                 break;
             default:
                 break;
@@ -66,7 +66,7 @@ public class EventProcessor : IEventProcessor
         return EventType.Undetermined;
     }
 
-    private void AddUser(string keyCloakPublishedMessage)
+    private async Task AddUser(string keyCloakPublishedMessage)
     {
         using (var scope = _serviceScopeFactory.CreateScope())
         {
@@ -75,10 +75,10 @@ public class EventProcessor : IEventProcessor
             try
             {
                 Profile newProfile = _mapper.Map<Profile>(keycloakEvent);
-                if (!profileRepo.ProfileExist(newProfile.KeyCloakId))
+                if (!await profileRepo.ProfileExistAsync(newProfile.KeyCloakId))
                 {
-                    profileRepo.CreateProfile(newProfile);
-                    profileRepo.SaveChanges();
+                    await profileRepo.CreateProfileAsync(newProfile);
+                    await profileRepo.SaveChangesAsync();
                     Console.WriteLine("--> User Added!");
                 }
                 else
@@ -93,7 +93,7 @@ public class EventProcessor : IEventProcessor
         }
     }
     
-    private void DeleteUser(string keyCloakPublishedMessage)
+    private async Task DeleteUser(string keyCloakPublishedMessage)
     {
         using (var scope = _serviceScopeFactory.CreateScope())
         {
@@ -103,11 +103,11 @@ public class EventProcessor : IEventProcessor
             {
                 if (keycloakEvent != null)
                 {
-                    if (profileRepo.ProfileExist(keycloakEvent.UserId))
+                    if (await profileRepo.ProfileExistAsync(keycloakEvent.UserId))
                     {
-                        var profile = profileRepo.GetProfileById(keycloakEvent.UserId);
+                        var profile = await profileRepo.GetProfileByIdAsync(keycloakEvent.UserId);
                         profileRepo.DeleteProfile(profile);
-                        profileRepo.SaveChanges();
+                        await profileRepo.SaveChangesAsync();
                         Console.WriteLine("--> User Deleted!");
                     }
                     else

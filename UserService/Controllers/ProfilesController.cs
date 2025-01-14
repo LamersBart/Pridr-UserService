@@ -27,10 +27,10 @@ public class ProfilesController : ControllerBase
     }
     
     [HttpGet()]
-    public ActionResult<IEnumerable<ProfileReadDto>> GetProfiles()
+    public async Task<ActionResult<IEnumerable<ProfileReadDto>>> GetProfiles()
     {
         Console.WriteLine("--> Getting all profiles...");
-        var platformItems = _repo.GetAllProfiles();
+        var platformItems = await _repo.GetAllProfilesAsync();
         return Ok(_mapper.Map<IEnumerable<ProfileReadDto>>(platformItems));
     }
     
@@ -41,26 +41,26 @@ public class ProfilesController : ControllerBase
         if (accessToken != null)
         {
             string keyCloakId = FetchKeycloakUserId(accessToken);
-            if (!_repo.ProfileExist(keyCloakId))
+            if (!await _repo.ProfileExistAsync(keyCloakId))
             {
                 return NotFound();
             }
             Console.WriteLine($"--> Getting Profile By Id: {keyCloakId}...");
-            Profile profile = _repo.GetProfileById(keyCloakId);
+            Profile profile = await _repo.GetProfileByIdAsync(keyCloakId);
             return Ok(_mapper.Map<ProfileReadDto>(profile));
         }
         return BadRequest("Access token is invalid.");
     }
     
     [HttpGet("{keyCloakId}")]
-    public ActionResult<ProfileReadDto> GetProfileById(string keyCloakId) 
+    public async Task<ActionResult<ProfileReadDto>> GetProfileById(string keyCloakId) 
     {
-        if (!_repo.ProfileExist(keyCloakId))
+        if (!await _repo.ProfileExistAsync(keyCloakId))
         {
             return NotFound();
         }
         Console.WriteLine($"--> Getting Profile By Id: {keyCloakId}...");
-        Profile profile = _repo.GetProfileById(keyCloakId);
+        Profile profile = await _repo.GetProfileByIdAsync(keyCloakId);
         return Ok(_mapper.Map<ProfileReadDto>(profile));
     }
     
@@ -68,27 +68,27 @@ public class ProfilesController : ControllerBase
     public async Task<IActionResult> GetUserNamesByIds(List<string> ids)
     {
         Console.WriteLine("--> Getting batch profiles...");
-        var profiles = _repo.GetUserNames(ids);
+        var profiles = await _repo.GetUserNamesAsync(ids);
         return Ok(_mapper.Map<IEnumerable<ProfileUserNameDto>>(profiles));
     }
     
     [HttpPatch("{keyCloakId}")]
-    public ActionResult<ProfileReadDto> UpdateProfile(string keyCloakId, ProfileUpdateDto profileUpdateDto)
+    public async Task<ActionResult<ProfileReadDto>> UpdateProfile(string keyCloakId, ProfileUpdateDto profileUpdateDto)
     {
-        if (!_repo.ProfileExist(keyCloakId))
+        if (!await _repo.ProfileExistAsync(keyCloakId))
         {
             return NotFound();
         }
         string oldName = String.Empty;
         Console.WriteLine($"--> Updating Profile By Id: {keyCloakId}...");
-        Profile profile = _repo.GetProfileById(keyCloakId);
+        Profile profile = await _repo.GetProfileByIdAsync(keyCloakId);
         if (profile.UserName != null)
         {
             oldName = profile.UserName!;
         }
         Profile updatedProfile = _mapper.Map(profileUpdateDto, profile);
         _repo.UpdateProfile(updatedProfile);
-        _repo.SaveChanges();
+        await _repo.SaveChangesAsync();
         if (oldName != updatedProfile.UserName)
         {
             try
@@ -106,43 +106,43 @@ public class ProfilesController : ControllerBase
     }
     
     [HttpPatch("location/{keyCloakId}")]
-    public ActionResult<ProfileReadDto> UpdateLocationOfProfile(string keyCloakId, ProfileUpdateLocationDto profileUpdateLocationDto)
+    public async Task<ActionResult<ProfileReadDto>> UpdateLocationOfProfile(string keyCloakId, ProfileUpdateLocationDto profileUpdateLocationDto)
     {
-        if (!_repo.ProfileExist(keyCloakId))
+        if (!await _repo.ProfileExistAsync(keyCloakId))
         {
             return NotFound();
         }
         Console.WriteLine($"--> Updating Location Of Profile By Id: {keyCloakId}...");
-        Profile profile = _repo.GetProfileById(keyCloakId);
+        Profile profile = await _repo.GetProfileByIdAsync(keyCloakId);
         Profile updatedProfile = _mapper.Map(profileUpdateLocationDto, profile);
         _repo.UpdateProfile(updatedProfile);
-        _repo.SaveChanges();
+        await _repo.SaveChangesAsync();
         return Ok(_mapper.Map<ProfileReadDto>(updatedProfile));
     }
     
     [AllowAnonymous]
     [HttpPatch("test")]
-    public ActionResult<ProfileReadDto> UpdateProfileTest(ProfileUpdateDto profileUpdateDto)
+    public async Task<ActionResult<ProfileReadDto>> UpdateProfileTest(ProfileUpdateDto profileUpdateDto)
     {
         var disableAuth = Environment.GetEnvironmentVariable("DISABLE_AUTH") == "true";
         if (!disableAuth)
         {
             return NotFound("This endpoint is available only when testmode is enabled.");
         }
-        if (!_repo.ProfileExist("a6427685-84e3-4fbf-8716-c94d1053b020"))
+        if (!await _repo.ProfileExistAsync("a6427685-84e3-4fbf-8716-c94d1053b020"))
         {
             return NotFound();
         }
         string oldName = String.Empty;
         Console.WriteLine($"--> Updating Profile By Id: a6427685-84e3-4fbf-8716-c94d1053b020...");
-        Profile profile = _repo.GetProfileById("a6427685-84e3-4fbf-8716-c94d1053b020");
+        Profile profile = await _repo.GetProfileByIdAsync("a6427685-84e3-4fbf-8716-c94d1053b020");
         if (profile.UserName != null)
         {
             oldName = profile.UserName!;
         }
         Profile updatedProfile = _mapper.Map(profileUpdateDto, profile);
         _repo.UpdateProfile(updatedProfile);
-        _repo.SaveChanges();
+        await _repo.SaveChangesAsync();
         if (oldName != updatedProfile.UserName)
         {
             try
